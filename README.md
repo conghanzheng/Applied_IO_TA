@@ -7,5 +7,9 @@
 - TA2.pdf
 - TA2.m: Simple profit maximization problems solved with Matlab symbolic mathematics
 
-## TA ?: Demand Analysis with the AIDS Model
+## TA3: Prodcut Differentiation
+
+## TA4: Demand Analysis with the AIDS Model
 - docs/index.*: Slides and web page generated from the Rmd source code. 
+
+## TA5: The BLP Method
