@@ -5,15 +5,15 @@ author:
 - "TA: Conghan Zheng"
 date: 'Last updated: `r Sys.Date()`'
 output:
-  bookdown::pdf_document2:
-    toc: yes
-    number_sections: yes
   bookdown::html_document2:
     toc: yes
     toc_float: yes
     number_sections: yes
     code_folding: hide
-    code_download: yes
+    code_download: no
+  bookdown::pdf_document2:
+    toc: yes
+    number_sections: yes
   html_notebook:
     toc: yes
     toc_float: yes
@@ -26,8 +26,8 @@ theme: paper
 
 *Latest version of this file:* 
 
-- [`pdf`](https://github.com/Nagato0376/IO-TA-AIDS/blob/ccb87c854b9e67ec79e4ecd47840d879c325ef27/docs/index.pdf); 
-- [`html`](https://nagato0376.github.io/IO-TA-AIDS/) (contains R code chunks).
+- [`pdf`](https://github.com/conghanzheng/Applied_IO_TA/blob/ccb87c854b9e67ec79e4ecd47840d879c325ef27/docs/index.pdf); 
+- [`html`](https://conghanzheng.github.io/Applied_IO_TA/) (contains R code chunks).
 
 # Overview
 
