@@ -1,33 +1,33 @@
 ---
-title: TA session
-subtitle: Demand Analysis with the Almost Ideal Demand System (AIDS) Model
+title: "TA session"
 author:
-- Applied IO with Susanna Esteban (IDEA, Spring 2023)
+- "Applied IO with Susanna Esteban (IDEA, Spring 2023)"
 - "TA: Conghan Zheng"
 date: 'Last updated: `r Sys.Date()`'
 output:
   bookdown::pdf_document2:
     toc: yes
     number_sections: yes
-  html_notebook:
-    toc: yes
-    toc_float: yes
-    number_sections: yes
-    code_folding: hide
   bookdown::html_document2:
     toc: yes
     toc_float: yes
     number_sections: yes
     code_folding: hide
     code_download: yes
+  html_notebook:
+    toc: yes
+    toc_float: yes
+    number_sections: yes
+    code_folding: hide
+subtitle: Demand Analysis with the Almost Ideal Demand System (AIDS) Model
 urlcolor: blue
 theme: paper
 ---
 
 *Latest version of this file:* 
 
-- [`pdf`](https://drive.google.com/file/d/13np6QRZarC0UikP4_WQ4-riGk7wP14P4/view?usp=sharing); 
-- [`html`](https://nagato0376.github.io/AIDS-Page/) (contains R code chunks).
+- [`pdf`](https://drive.google.com/file/d/1CwdZ30L1JNRNmzC1MszFUggyYx4xMtG5/view?usp=sharing); 
+- [`html`](https://nagato0376.github.io/IO-TA-AIDS/) (contains R code chunks).
 
 # Overview
 
@@ -202,7 +202,7 @@ if (!require('pacman')) install.packages('pacman')
 library(pacman)
 pacman::p_load(packages, character.only = TRUE) ## Check if all packages declared in the previous vector are installed, install if not, and load them
 
-## Path to the current script
+## (Local) Path to the current script
 scriptpath <- dirname(rstudioapi::getSourceEditorContext()$path) %>% setwd()
 ```
 
@@ -223,8 +223,11 @@ data_wide <- data.table::fread("https://github.com/cran/micEconAids/raw/master/d
   drop_na() %>%
   rename(Year = V1)
 
+## Number of goods
 n <- 4
 
+## Data cleansing
+## Eventually, we need wide data, but it would be handy if we first reshape it longer
 data_long <- tidyr::pivot_longer(data_wide %>% select(c('Year',"xFood",
                                                         'wFood1','wFood2','wFood3','wFood4',
                                                         'pFood1','pFood2','pFood3','pFood4')),
@@ -245,7 +248,8 @@ data_long <- tidyr::pivot_longer(data_wide %>% select(c('Year',"xFood",
          lnx_lnP_stone_t = log(x_t) - lnP_stone_t,
          lnx_lnP_stone_t_1 = log(x_t) - lnP_stone_t_1)
 
-print(head(data_long))
+print(head(data_long[,1:7]))
+  
 ```
 ## Estimation
 
@@ -261,8 +265,8 @@ la_data <- pivot_wider(data_long %>% select(c('Year','Food','x_t','w_jt','lnp_jt
 
 colnames(la_data) <- gsub("(^\\w+\\_)(j)(t)(\\_)(\\d{1})","\\1\\5\\3",colnames(la_data))
 
-## Restrictions on paramters
-## symmetry is assumed (symmetry implies homogeneity)
+## Function: return the restrictions on paramters (our equation system is a constrained system)
+## Symmetry is assumed (notice that symmetry implies homogeneity)
 restriction <- function(n) {
   nExoEqn <- n + 2 # number of exogenous variables per equation
   nExo <- (n-1)*nExoEqn # number of exogenous variables 
@@ -312,7 +316,7 @@ restriction <- function(n) {
   return(restriction)
 }
 
-## LA-AIDS estimation, returning the coefficients
+## Function: LA-AIDS estimation, returning the coefficients
 la_coef <- function(est, n, data, stone_lag = FALSE) {
   data <- as.data.frame(data)
   
@@ -401,6 +405,7 @@ la_coef <- function(est, n, data, stone_lag = FALSE) {
   r2[n] <- miscTools::rSquared(as.numeric(data[nObs, paste0("w_",c(1:n),'t')[n]]), wResid[nObs,n])
   names(r2) <- paste0("w_",c(1:n),'t')
   
+  ## Function output
   out <- list()
   out$coef <- coef
   out$alpha <- coef[grepl('alpha',names(coef))]
@@ -413,7 +418,7 @@ la_coef <- function(est, n, data, stone_lag = FALSE) {
   return(out)
 }
 
-## Function to print the LA-AIDS estimation results
+## Function: to print the LA-AIDS estimation results
 la_print <- function(coef) {
   cat( "Demand analysis with the Almost Ideal Demand System (AIDS)\n" )
   cat( "Estimation Method: LA" )
@@ -426,7 +431,7 @@ la_print <- function(coef) {
 
 The LA-AIDS model estimates the following equation system:
 ```{r la_system, echo = knitr::is_html_output(), restuls = 'markup'}
-## LA equation system
+## Function: LA equation system
 la_sur_system <- function(n,stone_lag=FALSE){
   system <- list()
     for(i in 2:n ) {
@@ -443,12 +448,13 @@ la_sur_system <- function(n,stone_lag=FALSE){
   return(system)
 }
 
+## Print
 print(la_sur_system(n=4, stone_lag = FALSE) %>% as.matrix())
 ```
 One equation ($j=4$) is dropped, as explained in section \@ref(empirics). The system is subject to the restrictions \eqref{eq:homocs} on the coefficients. Here are the estimation results of the LA-AIDS model.
 
 ```{r la_fit, echo = knitr::is_html_output(), results = 'markup'}
-## Run the functions
+## Execute the functions
 la_est <- systemfit::systemfit(la_sur_system(n=4, stone_lag = FALSE), 
                                method = "SUR",
                                data = la_data, 
@@ -462,7 +468,7 @@ la_print(la_coef(la_est, n=4, data = la_data))
 
 Using the strategy discussed in section \@ref(aidssteps), system \eqref{eq:aidsec} can be estimated using linear estimation techniques:
 ```{r aids_system, echo = knitr::is_html_output(), restuls = 'markup'}
-## AIDS equation system
+## Function: AIDS equation system
 aids_sur_system <- function(n){
   system <- list()
     for(i in 2:n ) {
@@ -475,6 +481,7 @@ aids_sur_system <- function(n){
   return(system)
 }
 
+## Print the system
 print(aids_sur_system(n=4) %>% as.matrix())
 ```
 The initial value $\ln P^0$ (a $T \times 1$ vector) is obtained from the LA-AIDS estimation. Convergence is reached fast:
@@ -490,7 +497,7 @@ aids_data <- pivot_wider(data_long %>%
 
 colnames(aids_data) <- gsub("(^\\w+\\_)(j)(t)(\\_)(\\d{1})","\\1\\5\\3",colnames(aids_data))
 
-## Function to calculate the translog price lnP
+## Function: to calculate the translog prices lnP (which depend on parameters)
 translog <- function(coef, data) {
   nObs <- nrow(data)
   alpha0 <- 1
@@ -513,13 +520,13 @@ translog <- function(coef, data) {
   return(lnP_t)
 }
 
-## Add intial values of translog prices to data
+## Add intial values of translog prices to data (calculated using LA-AIDS estiamtes)
 aids_data$lnP_t <- as.numeric(translog(coef = la_coef(la_est, n=4, data = la_data)$coef, data = la_data))
 
 aids_data <- aids_data %>%
   mutate(lnx_lnP_t = lnx_t - lnP_t)
 
-## AIDS estimation
+## Function: AIDS estimation
 aids_est <- function(maxIter, tol = 1e-5, b_start = la_coef(la_est, n=4, data = la_data)$coef, data = aids_data, n) {
 
 ## starting values
@@ -597,7 +604,7 @@ out <- cbind(la_coef(la_est, n=4, data = la_data)$coef,
              aids_est(maxIter = 10, tol = 1e-5, b_start = la_coef(la_est, n=4, data = la_data)$coef, data = aids_data, n=4)$b) %>% as.data.frame()
 
 ## Get the actual number of runs (which is likely to be lower than our preset upper limit)
-colnames(out) <- c("LA-AIDS",paste0("No. of iterations = ",aids_est(maxIter = 1, tol = 1e-5, b_start = la_coef(la_est, n=4, data = la_data)$coef, data = aids_data, n=4)$iter), paste0("No. of iterations = ", aids_est(maxIter = 5, tol = 1e-5, b_start = la_coef(la_est, n=4, data = la_data)$coef, data = aids_data, n=4)$iter),paste0("No. of iterations = ", aids_est(maxIter = 10, tol = 1e-5, b_start = la_coef(la_est, n=4, data = la_data)$coef, data = aids_data, n=4)$iter,' (converge)'))
+colnames(out) <- c("LA-AIDS",paste0("No. of iterations = ",aids_est(maxIter = 1, tol = 1e-5, b_start = la_coef(la_est, n=4, data = la_data)$coef, data = aids_data, n=4)$iter), paste0("No. of iterations = ", aids_est(maxIter = 5, tol = 1e-5, b_start = la_coef(la_est, n=4, data = la_data)$coef, data = aids_data, n=4)$iter),paste0("No. of iterations = ", aids_est(maxIter = 10, tol = 1e-5, b_start = la_coef(la_est, n=4, data = la_data)$coef, data = aids_data, n=4)$iter,' (convergence)'))
 
 ## Print, compare with LA results
 knitr::kable(out, 
@@ -616,7 +623,7 @@ I won't give the elasticities expressions here. For the expenditure elasticities
 
 The demand elasticities are calculated at sample means:
 ```{r aids_elas, echo = knitr::is_html_output(), restuls = 'markup'}
-## Function to calcualte expenditure and price elasticities of demand (Marshallian and Hicksian)
+## Function: to calcualte expenditure and price elasticities of demand (Marshallian and Hicksian)
 aids_elas <- function(coef,data,shares,prices) {
   alpha <- coef[grepl('alpha',names(coef))]
   n <- length(alpha)
