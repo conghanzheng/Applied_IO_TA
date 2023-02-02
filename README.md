@@ -10,6 +10,6 @@
 ## TA?: Product Differentiation
 
 ## TA?: Demand Analysis with the AIDS Model
-- [index.pdf](https://github.com/conghanzheng/Applied_IO_TA/blob/ccb87c854b9e67ec79e4ecd47840d879c325ef27/docs/index.pdf) and [index.html](https://conghanzheng.github.io/Applied_IO_TA/): Slides and web page generated from the Rmd source code. 
+- [index.pdf](https://github.com/conghanzheng/Applied_IO_TA/blob/ccb87c854b9e67ec79e4ecd47840d879c325ef27/docs/index.pdf) and [index.html](https://conghanzheng.github.io/Applied_IO_TA/): PDF and web page generated from the Rmd source code. 
 
 ## TA?: The BLP Method
