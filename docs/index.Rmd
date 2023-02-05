@@ -1,5 +1,6 @@
 ---
 title: "TA session"
+subtitle: "Demand Analysis with the Almost Ideal Demand System (AIDS) Model"
 author:
 - "Applied IO with Susanna Esteban (IDEA, Spring 2023)"
 - "TA: Conghan Zheng"
@@ -11,15 +12,14 @@ output:
     number_sections: yes
     code_folding: hide
     code_download: no
-  bookdown::pdf_document2:
-    toc: yes
-    number_sections: yes
   html_notebook:
     toc: yes
     toc_float: yes
     number_sections: yes
     code_folding: hide
-subtitle: Demand Analysis with the Almost Ideal Demand System (AIDS) Model
+  bookdown::pdf_document2:
+    toc: yes
+    number_sections: yes
 urlcolor: blue
 theme: paper
 ---
@@ -185,7 +185,7 @@ standard AIDS model of Deaton & Muellbauer (1980a), or its quadratic variant of 
 - Matlab, Fortran, Gauss, C, C++ ...: You can code it up by yourself, it's not difficult if you are familiar with the language/software.
 
 For TA materials I choose R notebook^[ 
-R notebook is just like Jupyter notebook, it allows for independent and interactive execution of the code chunks, and markup languages like markdown and LaTex. R notebook's (it's available only in Rstudio, you can't use it in other IDE) advantage over Jupyter notebook is that it allows [inline code](https://rmarkdown.rstudio.com/lesson-4.html). In Jupyter notebook, you need to have the `python-markdown` extension for inline code, which is a non-standard syntax, it doesn't work in JupyterLab for example, so you need to be prepared to take that risk. But for collaboration, the Jupyter project is clearly doing better.] for illustration purpose.
+R notebook is just like Jupyter notebook, it allows for independent and interactive execution of the code chunks, and markup languages like markdown and LaTeX. R notebook's (it's available only in Rstudio, you can't use it in other IDE) advantage over Jupyter notebook is that it allows [inline code](https://rmarkdown.rstudio.com/lesson-4.html). In Jupyter notebook, you need to have the `python-markdown` extension for inline code, which is a non-standard syntax, it doesn't work in JupyterLab for example, so you need to be prepared to take that risk. But for collaboration, the Jupyter project is clearly doing better.] for illustration purpose.
 
 ```{r chunk_setup, include = FALSE}
 ## Chunk options
@@ -208,7 +208,7 @@ scriptpath <- dirname(rstudioapi::getSourceEditorContext()$path) %>% setwd()
 
 ## Data
 
-Our data set is U.S. food demand data which distinguishes four categories ($j \in \{1,2,3,4\}$) of food: 
+Our data set is [U.S. food demand data](https://github.com/cran/micEconAids/raw/master/data/Blanciforti86.txt.gz) (Blanciforti et al., 1986) which distinguishes four categories ($j \in \{1,2,3,4\}$) of food(: 
   
 * meats (`Food1`),
 * fruits and vegetables (`Food2`),
