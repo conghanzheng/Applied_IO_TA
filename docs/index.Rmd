@@ -18,7 +18,7 @@ output:
     number_sections: yes
     code_folding: hide
   bookdown::pdf_document2:
-    toc: yes
+    toc: no
     number_sections: yes
 urlcolor: blue
 theme: paper
@@ -63,7 +63,7 @@ We can then write the expenditure share of product $j$:
 \end{align}
 where the chain rule is used.
 
-Following Deaton and Muellbauer (1980a), we take the *Piglog* class of preferences. The Piglog form was developed to treat aggregate consumer behavior as if it were the outcome of a single rational representative consumer. If this is the case, then a reallocation of a single unit of currency from any one household to another must leave market demand unchanged. In other words, the marginal propensity to spend must be the same for all households, so the quantity consumed is linear in expenditure. Furthermore, we have the following log-expenditure function:
+Following Deaton and Muellbauer (1980a), we take the *Piglog* (Price Invariant Generalized Logarithmic) class of preferences. The Piglog form was developed to treat aggregate consumer behavior as if it were the outcome of a single rational representative consumer. If this is the case, then a reallocation of a single unit of currency from any one household to another must leave market demand unchanged. In other words, the marginal propensity to spend must be the same for all households, so the quantity consumed is linear in expenditure. Furthermore, we have the following log-expenditure function:
 \begin{align}\label{eq:lnexp}
   \ln e(p,u) = a(p) + b(p) \cdot u \tag{4}
 \end{align}
