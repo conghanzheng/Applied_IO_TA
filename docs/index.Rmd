@@ -1,0 +1,689 @@
+---
+title: "TA session"
+subtitle: "Demand Analysis with the Almost Ideal Demand System (AIDS) Model"
+author:
+- "Applied IO with Susanna Esteban (IDEA, Spring 2023)"
+- "TA: Conghan Zheng"
+date: 'Last updated: `r Sys.Date()`'
+output:
+  bookdown::html_document2:
+    toc: yes
+    toc_float: yes
+    number_sections: yes
+    code_folding: hide
+    code_download: no
+  html_notebook:
+    toc: yes
+    toc_float: yes
+    number_sections: yes
+    code_folding: hide
+  bookdown::pdf_document2:
+    toc: no
+    number_sections: yes
+urlcolor: blue
+theme: paper
+---
+
+*Latest version of this file:* 
+
+- [`pdf`](https://github.com/conghanzheng/Applied_IO_TA/blob/ccb87c854b9e67ec79e4ecd47840d879c325ef27/docs/index.pdf); 
+- [`html`](https://conghanzheng.github.io/Applied_IO_TA/) (contains R code chunks).
+
+# Overview
+
+- In the following example, we will estimate a nonlinear Almost Ideal Demand System (AIDS) model and its linear approximation (LA-AIDS model). 
+
+## Model
+
+Recall from microeconomic theory the expenditure function of an $n$-good system (in most recent applications of the AIDS model, a "good" is an aggregate product category):
+\begin{align*}
+  e(p,u) \equiv \min_{\{ q_j \}_{j=1}^{n}} &\sum_{j=1}^n p_j q_j \\
+  s.t. \ & U(q_1, \dots, q_n) \geq u
+\end{align*}
+The Hicksian (or compensated) demand function solves the expenditure minimization problem: 
+\begin{align*}
+  h(p,u) \equiv \underset{\{ q_j \}_{j=1}^{n}}{\operatorname{arg min}} &\sum_{j=1}^n p_j q_j \\
+  s.t. \ & U(q_1, \dots, q_n) \geq u
+\end{align*}
+It follows that 
+\begin{align}\label{eq:hicksian}
+  e(p,u) = p \cdot h(p,u) \tag{1}
+\end{align}
+where the price vector $p=(p_1, \dots, p_n)$. By the [Shephard's Lemma](https://en.wikipedia.org/wiki/Shephard%27s_lemma), we have
+\begin{align*}
+  \frac{\partial e(p,u)}{\partial p_j} = h_j (p,u) = q_j
+\end{align*}
+For a utility-maximizing consumer, her total expenditure $X$ satisfies
+\begin{align}\label{eq:bc}
+  X = e(p,u) \tag{2}
+\end{align}
+We can then write the expenditure share of product $j$:
+\begin{align}\label{eq:share}
+  w_j \equiv \frac{p_j q_j}{X} \overset{\eqref{eq:bc}}{=} \frac{p_j q_j}{e(p,u)}  =  \frac{\partial \ln e(p,u)}{\partial \ln p_j} \tag{3}
+\end{align}
+where the chain rule is used.
+
+Following Deaton and Muellbauer (1980a), we take the *Piglog* (Price Invariant Generalized Logarithmic) class of preferences. The Piglog form was developed to treat aggregate consumer behavior as if it were the outcome of a single rational representative consumer. If this is the case, then a reallocation of a single unit of currency from any one household to another must leave market demand unchanged. In other words, the marginal propensity to spend must be the same for all households, so the quantity consumed is linear in expenditure. Furthermore, we have the following log-expenditure function:
+\begin{align}\label{eq:lnexp}
+  \ln e(p,u) = a(p) + b(p) \cdot u \tag{4}
+\end{align}
+Deaton and Muellbauer (1980a) set the functional forms of $a(p)$ and $b(p)$ to ensure that $e(\cdot,\cdot)$ is flexible enough and has enough parameters for its derivatives $\frac{\partial e}{\partial p_j}$, $\frac{\partial e}{\partial u}$, $\frac{\partial e}{\partial p_j \partial p_k}$, $\frac{\partial e}{\partial \partial p_j \partial u}$, $\frac{\partial e}{\partial u^2}$:
+\begin{align*}
+  a(p) &= \sum_{j=1}^n \alpha_j \ln p_j + \frac{1}{2} \sum_{j=1}^n \sum_{k=1}^n \gamma_{jk}^* \ln p_j \ln p_k \\
+  b(p) &= \prod_{j=1}^n p_j^{\beta_j}
+\end{align*}
+The translog expression $a(p)$ can be obtained by expanding $\ln e (p)$ in a second-order Taylor series about the point $\ln p= 0$.
+
+The homogeneity of degree of the expenditure function in $p$ requires:
+\begin{align}\label{eq:homocs}
+  \sum_{j=1}^n \alpha_j = 1, \ \sum_{j=1}^n \gamma^*_{jk} = \sum_{j=1}^n \gamma^*_{kj} = \sum_{j=1}^n \beta_j = 0 \tag{5}
+\end{align}
+It then follows that
+\begin{align}
+  \eqref{eq:share} \& \eqref{eq:lnexp} \Rightarrow 
+  w_j 
+  & = \frac{\partial \ln e(p,u)}{\partial \ln p_j} \nonumber \\
+  &= \alpha_j + \frac{1}{2} \sum_k \gamma^*_{jk} \ln p_k + \frac{1}{2} \sum_k \gamma^*_{kj} \ln p_k + \beta_j \prod_{j=1}^n p_j^{\beta_j} \cdot u \nonumber \\
+  &\equiv \alpha_j +  \sum_k \gamma_{jk} \ln p_k + \beta_j \prod_{j=1}^n p_j^{\beta_j} \cdot u \nonumber \\
+  &= \alpha_j +  \sum_k \gamma_{jk} \ln p_k + \beta_j b(p) u \nonumber \\
+  &\overset{\eqref{eq:lnexp}}{=} \alpha_j +  \sum_k \gamma_{jk} \ln p_k + \beta_j \Big( \ln e(p,u) - a(p) \Big) \nonumber \\
+  &\overset{\eqref{eq:bc}}{\equiv} \alpha_j +  \sum_k \gamma_{jk} \ln p_k + \beta_j 
+  \ln \left( \frac{X}{P} \right) \label{eq:aids} \tag{6}
+\end{align} 
+where $\gamma_{jk} = \gamma_{kj} \equiv \frac{1}{2} \left( \gamma_{jk}^* + \gamma_{kj}^* \right)$ and the price index $P$ is defined by 
+\begin{align}
+  \ln P 
+  &\equiv a(p) = \frac{1}{2} \big( a(p) + a(p) \big) \nonumber \\
+  &= \sum_{j=1}^n \alpha_j \ln p_j + \frac{1}{2} \sum_{j=1}^n \sum_{k=1}^n \gamma_{jk}\ln p_j \ln p_k \label{eq:price} \tag{7}
+\end{align}
+Expression \eqref{eq:aids} is the *AIDS demand system* in budget share form. 
+ 
+## Empirical Strategy {#empirics}
+
+Now we have a system of equations that can be econometrically estimated (the AIDS model):
+\begin{align}\label{eq:aidsec}
+  w_{jt} = \alpha_j +  \sum_k \gamma_{jk} \ln p_{jt} + \beta_j \ln \left( \frac{X_t}{P_t} \right) + \varepsilon_{jt}, \quad \sum_j \varepsilon_{jt} = 0, \forall t \tag{8}
+\end{align}
+Given that the observed shares $w_i$ always sum to one, the constraints on parameters \eqref{eq:homocs} are automatically satisfied. 
+
+One problem is that $\sum_j \varepsilon_j = 0$ implies that the covariance matrix is singular, to avoid estimation problems due to this singularity, one of the equations has to be dropped from the system. But no information will be lost by doing this, the coefficients of the dropped equation can be calculated from the restrictions on parameters \eqref{eq:homocs}, the estimation results do not depend on which equation is dropped. 
+
+The demand system \eqref{eq:aidsec} is linear except for the price index $P_t$. Deaton and Muellbauer (1980a) suggest approximating the price index with the Stone's index to make the entire demand system linear: 
+\begin{align*}
+  \ln P_t^* 
+  &= \sum_j w_{jt} \ln p_{jt} \label{eq:stone} \tag{9}
+\end{align*}
+Then \eqref{eq:aidsec} can be estimated as (linear approximation of the AIDS, the LA-AIDS model)
+\begin{align}
+  w_{jt} &= \alpha_j - \beta_j \ln \phi +  \sum_k \gamma_{jk} \ln p_{jt} + \beta_j \ln \left( \frac{X_t}{P^*_t} \right) + \varepsilon_{jt} \nonumber \\
+  &\equiv \alpha_j^* +  \sum_k \gamma_{jk} \ln p_{jt} + \beta_j \ln \left( \frac{X_t}{P^*_t} \right) + \varepsilon_{jt} \label{eq:laaids} \tag{10}
+\end{align}
+where $P \simeq \phi P^*$, $\alpha_j^* \equiv \alpha_j - \beta_j \ln \phi$, and $\sum_j \alpha^*_j =0$ is still required for adding up, since $\sum_j \beta_j = 0$.
+
+Since the number of parameters increases quadratically with the number of products, the estimation of this model requires that $T$ (either time periods or geographic markets for spatial analysis) is substantially larger than the number of products $n$.
+
+Given data on prices $\{p_{jt}\}_{j,t}$ and quantities $\{q_{jt}\}_{j,t}$, our goal is to estimate the parameters $\{\alpha_{j}\}_{j}$, $\{\beta_{j}\}_{j}$, and $\{\gamma_{jk}\}_{j,k}$ of the AIDS \eqref{eq:aidsec} or the parameters $\{\alpha^*_{j}\}_{j}$, $\{\beta_{j}\}_{j}$, and $\{\gamma_{jk}\}_{j,k}$ of the LA-AIDS \eqref{eq:laaids}. 
+
+### LA-AIDS model
+
+#### Estimation Steps {-}
+
+Given data on prices $\{p_{jt}\}_{j,t}$ and quantities $\{q_{jt}\}_{j,t}$:
+
+- Calculate the total expenditures $y_{jt} = \sum_{j} p_{jt} q_{jt}$ and the expenditure shares $w_{jt} = \frac{p_{jt} q_{jt}}{X_t}$ from prices and quantities data.
+- Compute the Stone's price index $\ln P^*$ from shares and prices data using expression \eqref{eq:stone}.
+- Estimate model \eqref{eq:laaids}, obtain an $n\times 1$ vector for $\alpha$, an $n \times 1$ vector for $\beta$, and an $n \times n$ matrix for $\gamma$.
+
+#### Empirical Considerations {-}
+
+##### 1. Simultaneity Bias {-}
+
+The Stone's index includes current budget shares ($w_{it}$), which appear on both the left and right sides of \eqref{eq:laaids}. Several scholars (e.g. Blanciforti et al. 1986) suggest using lagged shares in the Stone's price index:
+\begin{align*}
+  \ln P_t^{*L} 
+  &= \sum_j w_{j,t-1} \ln p_{jt}
+\end{align*}
+
+##### 2. Unit of measurement {-}
+
+Obviously, the Stone's price index \eqref{eq:stone} is not invariant to changes in the units of measurement (e.g. EURO/kg or USD/pound). One solution is to normalize: to choose a "base" period and to use the relative prices (see Moschini, 1995). 
+
+### AIDS model {#aidssteps}
+
+#### Estimation Steps {-}
+
+Iterative Linear Least Squares Estimation:
+
+- Given a starting value $\ln P_t^0$ of $\ln P_t$, \eqref{eq:aidsec} can be estimated by linear estimation techniques. A good choice for the initial value is the LA-AIDS estimate.
+- The price index can be updated with the estimated coefficients using expression \eqref{eq:price}, after this step, we get $\ln P_t^1$.
+- Estimate \eqref{eq:aidsec} with the updated value of $\ln P_t$, repeat untill convergence.
+
+At each iteration, \eqref{eq:aidsec} is a system of seemingly unrelated regressions (SUR), and we can estimate it using constrained (constrained parameters) feasible GLS (see Greene, 2018, chapter 10).
+
+This iterated SUR estimator generally converges to the FIML estimates (Blanciforti et al. (1986) estimate their AIDS model by FIML), maximum likelihood has no advantages over FGLS in its asymptotic properties (Greene, 2018). 
+
+# Estimation
+
+## Resources^[Stata is certainly not a good tool for structural models, Matlab is not always very fast. For me, R and Python are somewhat similar and they each have their own occasions. Python (`NumPy`) is more general in many cases, e.g., it understands either row-major (C style) or [column-major ordered](https://en.wikipedia.org/wiki/Row-_and_column-major_order) arrays (Fortran style), while R only understands the column-major. Python has the official [pystata](https://www.stata.com/new-in-stata/pystata/) for Stata integration, while R only has several user-written packages and none of them work well (I remember Wagner wasting a lot of time on these packages in his PS last semester). Katherina told me she found the online resources for structural models mainly in Python (especially of more macro) or Matlab. When it comes to the performance, Python has the clever [`@jit`](https://numba.readthedocs.io/en/stable/user/jit.html) from `Numba` that can speed up the code (Tino recommended it to me). But you can go one step further: integrate R with C++ ([`Rcpp`](https://github.com/RcppCore/Rcpp)) to improve the performance (Hanna recommended it to me). And more, R also has `shiny` which I guess no labor economist can refuse.]
+
+- R (more online resources for now): 
+  - Package [micEconAids](https://rdrr.io/cran/micEconAids/) (user-written package, still maintained; for Seemingly Unrelated Regression (SUR), it calls the [systemfit](https://cran.r-project.org/web/packages/systemfit/index.html) package).
+  
+- Python: 
+  - No user-written packages just designed for the AIDS model, to my knowledge. For SUR, you can choose the command `SUR` from the [`linearmodels`](https://pypi.org/project/linearmodels/) package.
+
+- Stata: 
+  - [`ml` command](https://journals.sagepub.com/doi/pdf/10.1177/1536867X0200200406)
+  - [`nlsur` command](https://journals.sagepub.com/doi/pdf/10.1177/1536867X0800800407) (`nlsur` provides similar results but much faster than `ml`)
+  - [`quaids` command](https://journals.sagepub.com/doi/pdf/10.1177/1536867X1201200306) (more than `nlsur`, `quaids` allows the user to fit either the
+standard AIDS model of Deaton & Muellbauer (1980a), or its quadratic variant of Banks et al., 1997. Demographic variables can be specified, elasticities can be calculated using postestimation commands.)
+  - Or, you can estimate the SUR using the commands `sureg` and `suest`.
+
+- SAS:
+  - Procedures `syslin` (LA-AIDS) and `model` (AIDS), an example: https://support.sas.com/rnd/app/ets/examples/aids/index.htm, calculating elasticities: https://support.sas.com/rnd/app/ets/examples/elasticity/index.htm
+  
+- Matlab, Fortran, Gauss, C, C++ ...: You can code it up by yourself, it's not difficult if you are familiar with the language/software.
+
+For TA materials I choose R notebook^[ 
+R notebook is just like Jupyter notebook, it allows for independent and interactive execution of the code chunks, and markup languages like markdown and LaTeX. R notebook's (it's available only in Rstudio, you can't use it in other IDE) advantage over Jupyter notebook is that it allows [inline code](https://rmarkdown.rstudio.com/lesson-4.html). In Jupyter notebook, you need to have the `python-markdown` extension for inline code, which is a non-standard syntax, it doesn't work in JupyterLab for example, so you need to be prepared to take that risk. But for collaboration, the Jupyter project is clearly doing better.] for illustration purpose.
+
+```{r chunk_setup, include = FALSE}
+## Chunk options
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+```{r r_setup, echo = knitr::is_html_output()}
+## ---- Preliminaries ----
+rm(list = ls()) ## Clear the environment
+
+## Install and load packages ----
+packages <- c('rstudioapi','R.utils','dplyr','tidyr','data.table','knitr','kableExtra','Hmisc','systemfit','miscTools') ## Manually list package dependencies
+if (!require('pacman')) install.packages('pacman')
+library(pacman)
+pacman::p_load(packages, character.only = TRUE) ## Check if all packages declared in the previous vector are installed, install if not, and load them
+
+## (Local) Path to the current script
+scriptpath <- dirname(rstudioapi::getSourceEditorContext()$path) %>% setwd()
+```
+
+## Data
+
+Our data set is [U.S. food demand data](https://github.com/cran/micEconAids/raw/master/data/Blanciforti86.txt.gz) (Blanciforti et al., 1986) which distinguishes four categories ($j \in \{1,2,3,4\}$) of food(: 
+  
+* meats (`Food1`),
+* fruits and vegetables (`Food2`),
+* cereal and bakery products (`Food3`), and 
+* miscellaneous foods (`Food4`). 
+
+These data are available for the years 1947 to 1978.
+
+```{r data_clean, echo = knitr::is_html_output(), results = 'markup'}
+## Online data: Blanciforti et al. (1986)
+data_wide <- data.table::fread("https://github.com/cran/micEconAids/raw/master/data/Blanciforti86.txt.gz") %>% 
+  drop_na() %>%
+  rename(Year = V1)
+
+## Number of goods
+n <- 4
+
+## Data cleansing
+## Eventually, we need wide data, but it would be handy if we first reshape it longer
+data_long <- tidyr::pivot_longer(data_wide %>% select(c('Year',"xFood",
+                                                        'wFood1','wFood2','wFood3','wFood4',
+                                                        'pFood1','pFood2','pFood3','pFood4')),
+                         cols = !c(Year,xFood), 
+                         names_to = c('.value','Food'), 
+                         names_pattern = "(\\w+)(\\d{1})") %>%
+  group_by(Food) %>%
+  rename(w_jt = wFood,
+         p_jt = pFood,
+         x_t = xFood) %>%
+  mutate(w_j = mean(w_jt, na.rm = TRUE),
+         p_j = mean(p_jt, na.rm = TRUE),
+         lnp_jt = log(p_jt)) %>%
+  group_by(Year) %>%
+  mutate(lnx_t = log(x_t),
+         lnP_stone_t = sum(w_jt*lnp_jt, na.rm = TRUE),
+         lnP_stone_t_1 = sum(Hmisc::Lag(w_jt)*lnp_jt, na.rm = TRUE),
+         lnx_lnP_stone_t = log(x_t) - lnP_stone_t,
+         lnx_lnP_stone_t_1 = log(x_t) - lnP_stone_t_1)
+
+print(head(data_long[,1:7]))
+  
+```
+## Estimation
+
+### LA-AIDS
+
+```{r la_functions, echo = knitr::is_html_output()}
+## LA-AIDS Data
+la_data <- pivot_wider(data_long %>% select(c('Year','Food','x_t','w_jt','lnp_jt','lnx_lnP_stone_t','lnx_lnP_stone_t_1')),
+                       names_from = Food,
+                       names_glue = "{.value}_{Food}",
+                       values_from = c(w_jt,lnp_jt)
+                       )
+
+colnames(la_data) <- gsub("(^\\w+\\_)(j)(t)(\\_)(\\d{1})","\\1\\5\\3",colnames(la_data))
+
+## Function: return the restrictions on paramters (our equation system is a constrained system)
+## Symmetry is assumed (notice that symmetry implies homogeneity)
+restriction <- function(n) {
+  nExoEqn <- n + 2 # number of exogenous variables per equation
+  nExo <- (n-1)*nExoEqn # number of exogenous variables 
+  
+  restriction <- diag(nExo)
+  delCols <- NULL
+  for (i in 1:(n-1)) { ## homogeneity
+    delCol <- (i-1)*(nExoEqn) + 2 + n
+    addCol <- ((i-1)*nExoEqn + 3):((i - 1)*nExoEqn + 2 + (n - 1))
+    restriction[delCol, addCol] <- -1
+    delCols <- c(delCols, delCol)
+  }
+  for (i in 1:(n - 2)) { ## symmetry
+    for (j in (i + 1):(n - 1)) {
+     delCol <- (j - 1) * nExoEqn + 2 + i
+     addCol <- (i - 1) * nExoEqn + 2 + j
+     restriction[,addCol] <- restriction[,addCol] + restriction[,delCol]
+     delCols <- c(delCols, delCol)
+     }
+  }
+  restriction <- restriction[,-delCols]
+  
+  tmpnames <- NULL
+   for( i in 1:(n - 1)) {
+      tmpnames <- c(tmpnames, paste0("alpha_",i),paste0("beta_",i))
+      start <- 1
+      stop  <- n
+      for( j in 1:n){
+         tmpnames <- c(tmpnames, paste0("gamma_",i,j))
+      }
+   }
+  
+  rownames(restriction) <- tmpnames
+  
+  tmpnames <- NULL
+   for( i in 1:(n-1)) {
+      tmpnames <- c(tmpnames, paste0("alpha_",i),paste0("beta_",i))
+      start <- 1
+      stop  <- n
+      for( j in i:(n-1)){
+         tmpnames <- c(tmpnames, paste0("gamma_",i,j))
+      }
+   }
+  
+  colnames(restriction) <- tmpnames
+  
+  return(restriction)
+}
+
+## Function: LA-AIDS estimation, returning the coefficients
+la_coef <- function(est, n, data, stone_lag = FALSE) {
+  data <- as.data.frame(data)
+  
+  nExoEqn <- n + 2 # number of exogenous variables per equation
+  nObs <- if(stone_lag == TRUE) c(2:nrow(data)) else c(1:nrow(data))
+  
+  ## Matrix used to transform the coefficients
+  M <- matrix(0, n*nExoEqn, (n - 1)*nExoEqn)
+  rownames(M) <- c(paste0("alpha_",c(1:n)),paste0("beta_",c(1:n)),paste0("gamma_",rep(1:n,each=n),rep(1:n,n)))
+  tmpnames <- NULL
+   for( i in 1:(n - 1)) {
+      tmpnames <- c(tmpnames, paste0("alpha_",i),paste0("beta_",i))
+      start <- 1
+      stop  <- n
+      for( j in 1:n){
+         tmpnames <- c(tmpnames, paste0("gamma_",i,j))
+      }
+   }
+  colnames(M) <- tmpnames
+  alphas <- paste0("alpha_",c(1:n))
+  betas <- paste0("beta_",c(1:n))
+  gammas <- matrix(paste0("gamma_",rep(1:n,n),rep(1:n,each = n)), nrow = n, ncol = n)
+  
+  for(i in 1:(n-1) ) {
+         M[alphas[i], alphas[i]] <- 1
+         M[alphas[n], alphas[i]] <- -1 
+         M[betas[i], betas[i]] <- 1 
+         M[betas[n], betas[i]] <- -1
+         for(j in 1:n) {
+            M[gammas[i, j], gammas[i, j]] <- 1 
+            M[gammas[n, j], gammas[i, j]] <- -1 
+         }
+  }
+  
+  ## Coefficients
+  coef <- c(M %*% coef(est))
+  names(coef) <- c(paste0("alpha_",c(1:n)),paste0("beta_",c(1:n)),paste0("gamma_",rep(1:n,each=n),rep(1:n,n)))
+  coef[alphas[n]]  <- coef[alphas[n]] + 1
+  
+  ## Variance-covariance matrix
+  cov <- M %*% vcov(est) %*% t(M)
+  rownames(cov) <- names(coef)
+  colnames(cov) <- names(coef)
+  
+  ## Estimates with se and p values
+  stat <- miscTools::coefTable(coef, sqrt(diag(cov)), 1)
+  
+  ## Fitted values
+  wFitted <- as.data.frame(matrix( NA, nrow = nrow(data), ncol = n))
+  colnames(wFitted) <- paste0("w_",c(1:n),'t')
+  rownames(wFitted) <- rownames(data)
+  
+  if (stone_lag == FALSE) { ## whether to use lagged shares in Stone's price index
+    for( i in 1:nrow(data)) {
+         logPrices <- as.numeric(data[i,paste0("lnp_",c(1:n),'t')])
+         logTotExp <- as.numeric(log(data[i,'x_t']))
+         if(all(!is.na(c(logPrices,logTotExp)))) {
+            numerator <- coef[grepl('alpha',names(coef))] + matrix(coef[grepl('gamma',names(coef))], nrow = 4) %*% logPrices + coef[grepl('beta',names(coef))] * logTotExp
+            wFitted[i,] <- solve(diag(n) + coef[grepl('beta',names(coef))] %*% t(logPrices), numerator)
+         }
+      }
+  } else {
+    for( i in 1:nrow(data)) {
+         logPrices <- as.numeric(data[1,paste0("lnp_",c(1:n),'t')])
+         logTotExp <- as.numeric(log(data[1,'x_t']))
+         if(all(!is.na(c(logPrices,logTotExp)))) {
+            numerator <- coef[grepl('alpha',names(coef))] + matrix(coef[grepl('gamma',names(coef))], nrow = 4) %*% logPrices + coef[grepl('beta',names(coef))] * logTotExp
+            wFitted[1,] <- solve(diag(n) + coef[grepl('beta',names(coef))] %*% t(logPrices), numerator)
+         }
+      }
+  }
+  
+  ## Residuals
+  wResid <- data.frame(matrix(NA, nrow = nrow(data), ncol = n))
+  names(wResid) <- paste0("wResid", as.character(1:n))
+  
+  for( i in 1:n) {
+    wResid[,i] <- data[[paste0("w_",c(1:n),'t')[i]]] - wFitted[,i]
+   }
+  
+  ## R-squared
+  r2 <- numeric(n)
+  for(i in 1:(n - 1)) {
+    r2[i] <- summary(est$eq[[i]])$r.squared
+  }
+  r2[n] <- miscTools::rSquared(as.numeric(data[nObs, paste0("w_",c(1:n),'t')[n]]), wResid[nObs,n])
+  names(r2) <- paste0("w_",c(1:n),'t')
+  
+  ## Function output
+  out <- list()
+  out$coef <- coef
+  out$alpha <- coef[grepl('alpha',names(coef))]
+  out$beta <- coef[grepl('beta',names(coef))]
+  out$gamma <- matrix(coef[grepl('gamma',names(coef))], nrow = n)
+  out$cov <- cov
+  out$stat <- stat
+  out$r2 <- r2
+  
+  return(out)
+}
+
+## Function: to print the LA-AIDS estimation results
+la_print <- function(coef) {
+  cat( "Demand analysis with the Almost Ideal Demand System (AIDS)\n" )
+  cat( "Estimation Method: LA" )
+  cat( "Estimated Coefficients:\n" )
+  print(coef$stat)
+  cat( "\n R-squared:\n" )
+  print(coef$r2)
+}
+```
+
+The LA-AIDS model estimates the following equation system:
+```{r la_system, echo = knitr::is_html_output(), restuls = 'markup'}
+## Function: LA equation system
+la_sur_system <- function(n,stone_lag=FALSE){
+  system <- list()
+    for(i in 2:n ) {
+      if (stone_lag==TRUE) {
+        system[[i-1]] <- paste( "w_", as.character(i), 't', " ~ lnx_lnP_stone_t_1", sep = "" )
+      } else {
+        system[[i-1]] <- paste( "w_", as.character(i), 't', " ~ lnx_lnP_stone_t", sep = "" )
+      }
+      for( j in 1:n ) {
+        system[[i-1]] <- paste(system[[i-1]], " + lnp_", as.character(j), 't', sep = "")
+      }
+      system[[i-1]] <- as.formula(system[[i-1]])
+    }
+  return(system)
+}
+
+## Print
+print(la_sur_system(n=4, stone_lag = FALSE) %>% as.matrix())
+```
+One equation ($j=4$) is dropped, as explained in section \@ref(empirics). The system is subject to the restrictions \eqref{eq:homocs} on the coefficients. Here are the estimation results of the LA-AIDS model.
+
+```{r la_fit, echo = knitr::is_html_output(), results = 'markup'}
+## Execute the functions
+la_est <- systemfit::systemfit(la_sur_system(n=4, stone_lag = FALSE), 
+                               method = "SUR",
+                               data = la_data, 
+                               restrict.regMat = restriction(n=4))
+
+## Print results
+la_print(la_coef(la_est, n=4, data = la_data))
+```
+
+### AIDS
+
+Using the strategy discussed in section \@ref(aidssteps), system \eqref{eq:aidsec} can be estimated using linear estimation techniques:
+```{r aids_system, echo = knitr::is_html_output(), restuls = 'markup'}
+## Function: AIDS equation system
+aids_sur_system <- function(n){
+  system <- list()
+    for(i in 2:n ) {
+      system[[i-1]] <- paste( "w_", as.character(i), 't', " ~ lnx_lnP_t", sep = "" )
+      for( j in 1:n ) {
+        system[[i-1]] <- paste(system[[i-1]], " + lnp_", as.character(j), 't', sep = "")
+      }
+      system[[i-1]] <- as.formula(system[[i-1]])
+    }
+  return(system)
+}
+
+## Print the system
+print(aids_sur_system(n=4) %>% as.matrix())
+```
+The initial value $\ln P^0$ (a $T \times 1$ vector) is obtained from the LA-AIDS estimation. Convergence is reached fast:
+
+```{r aids_funtions, echo = knitr::is_html_output(), results = 'markup'}
+## AIDS data
+aids_data <- pivot_wider(data_long %>% 
+                           select(c('Year','Food','x_t','lnx_t','w_jt','lnp_jt')),
+                       names_from = Food,
+                       names_glue = "{.value}_{Food}",
+                       values_from = c(w_jt,lnp_jt)
+                       )
+
+colnames(aids_data) <- gsub("(^\\w+\\_)(j)(t)(\\_)(\\d{1})","\\1\\5\\3",colnames(aids_data))
+
+## Function: to calculate the translog prices lnP (which depend on parameters)
+translog <- function(coef, data) {
+  nObs <- nrow(data)
+  alpha0 <- 1
+  lnP_t <- array(alpha0, c(nObs))
+  
+  alpha <- coef[grepl('alpha',names(coef))]
+  n <- length(alpha)
+  beta <- coef[grepl('beta',names(coef))]
+  gamma <- matrix(coef[grepl('gamma',names(coef))], nrow = n)
+
+  for( i in 1:n) {
+    lnP_t <- lnP_t + alpha[i] * data[[paste0("lnp_",i,'t')]]
+    for( j in 1:n) {
+      lnP_t <- lnP_t + 0.5 * gamma[i,j] *data[[paste0("lnp_",i,'t')]] * data[[paste0("lnp_",j,'t')]]
+      }
+  }
+  
+  names(lnP_t) <- paste0('t=',row.names(data))
+  
+  return(lnP_t)
+}
+
+## Add intial values of translog prices to data (calculated using LA-AIDS estiamtes)
+aids_data$lnP_t <- as.numeric(translog(coef = la_coef(la_est, n=4, data = la_data)$coef, data = la_data))
+
+aids_data <- aids_data %>%
+  mutate(lnx_lnP_t = lnx_t - lnP_t)
+
+## Function: AIDS estimation
+aids_est <- function(maxIter, tol = 1e-5, b_start = la_coef(la_est, n=4, data = la_data)$coef, data = aids_data, n) {
+
+## starting values
+b <- b_start
+b_diff <- b
+data_updated <- data
+count <- 1
+
+for (nIter in 1:maxIter) {
+  b_last <- b ## save the coef from last iteration
+  
+  lnP_update <- translog(b, data = aids_data)
+  data_updated$lnP_t <- as.numeric(lnP_update)
+  data_updated <- data_updated %>% mutate(lnx_lnP_t = lnx_t - lnP_t)
+  
+  ## SUR
+  est <- systemfit::systemfit(aids_sur_system(n), method = "SUR",data = data_updated,restrict.regMat = restriction(n))
+  
+  nExoEqn <- n + 2 # number of exogenous variables per equation
+  nObs <- c(1:nrow(data_updated))
+  
+  ## Matrix used to transform the coefficients
+  M <- matrix(0, n*nExoEqn, (n - 1)*nExoEqn)
+  rownames(M) <- c(paste0("alpha_",c(1:n)),paste0("beta_",c(1:n)),paste0("gamma_",rep(1:n,each=n),rep(1:n,n)))
+  tmpnames <- NULL
+   for( i in 1:(n - 1)) {
+      tmpnames <- c(tmpnames, paste0("alpha_",i),paste0("beta_",i))
+      start <- 1
+      stop  <- n
+      for( j in 1:n){
+         tmpnames <- c(tmpnames, paste0("gamma_",i,j))
+      }
+   }
+  colnames(M) <- tmpnames
+  alphas <- paste0("alpha_",c(1:n))
+  betas <- paste0("beta_",c(1:n))
+  gammas <- matrix(paste0("gamma_",rep(1:n,n),rep(1:n,each = n)), nrow = n, ncol = n)
+  
+  for(i in 1:(n-1) ) {
+         M[alphas[i], alphas[i]] <- 1
+         M[alphas[n], alphas[i]] <- -1 
+         M[betas[i], betas[i]] <- 1 
+         M[betas[n], betas[i]] <- -1
+         for(j in 1:n) {
+            M[gammas[i, j], gammas[i, j]] <- 1 
+            M[gammas[n, j], gammas[i, j]] <- -1 
+         }
+  }
+  
+  ## Coefficients
+  b <- c(M %*% coef(est))
+  names(b) <- c(paste0("alpha_",c(1:n)),paste0("beta_",c(1:n)),paste0("gamma_",rep(1:n,each=n),rep(1:n,n)))
+  b[alphas[n]]  <- b[alphas[n]] + 1
+  
+  alpha <- b[grepl('alpha',names(b))]
+  beta <- b[grepl('beta',names(b))]
+  gamma <- matrix(b[grepl('gamma',names(b))], nrow = n)
+  
+  b_diff <- b - b_last
+  
+  count <- count + 1
+  
+  if (((t(b_diff) %*% b_diff) / (t(b) %*% b))^0.5 <= tol) break()
+}
+out <- list()
+out$b <- b
+out$iter <- nIter
+return(out)
+}
+
+## Execute the estimations, adjust the upper limit of number of iterations
+out <- cbind(la_coef(la_est, n=4, data = la_data)$coef,
+             aids_est(maxIter = 1, tol = 1e-5, b_start = la_coef(la_est, n=4, data = la_data)$coef, data = aids_data, n=4)$b,
+             aids_est(maxIter = 5, tol = 1e-5, b_start = la_coef(la_est, n=4, data = la_data)$coef, data = aids_data, n=4)$b,
+             aids_est(maxIter = 10, tol = 1e-5, b_start = la_coef(la_est, n=4, data = la_data)$coef, data = aids_data, n=4)$b) %>% as.data.frame()
+
+## Get the actual number of runs (which is likely to be lower than our preset upper limit)
+colnames(out) <- c("LA-AIDS",paste0("No. of iterations = ",aids_est(maxIter = 1, tol = 1e-5, b_start = la_coef(la_est, n=4, data = la_data)$coef, data = aids_data, n=4)$iter), paste0("No. of iterations = ", aids_est(maxIter = 5, tol = 1e-5, b_start = la_coef(la_est, n=4, data = la_data)$coef, data = aids_data, n=4)$iter),paste0("No. of iterations = ", aids_est(maxIter = 10, tol = 1e-5, b_start = la_coef(la_est, n=4, data = la_data)$coef, data = aids_data, n=4)$iter,' (convergence)'))
+
+## Print, compare with LA results
+knitr::kable(out, 
+             align = rep('c',ncol(out)),
+             booktabs = T) %>%
+  column_spec(2:5, width = "8em") %>%
+  add_header_above(c(" " = 2, "AIDS" = 3))
+  
+```
+
+## Demand Elasticities
+
+The parameters of most demand models, such as the AIDS, do not have a straightforward interpretation, and the slopes of the demand curves depend on arbitrary units of measurement. We can present the results in terms of elasticities.
+
+I won't give the elasticities expressions here. For the expenditure elasticities of demand and the price elasticities derived from Marshallian demand functions, see Anderson and Blundell (1983, page 400). For the price elasticities derived from Hicksian demand functions, see Deaton and Muellbauer (1980b, page 45). 
+
+The demand elasticities are calculated at sample means:
+```{r aids_elas, echo = knitr::is_html_output(), restuls = 'markup'}
+## Function: to calcualte expenditure and price elasticities of demand (Marshallian and Hicksian)
+aids_elas <- function(coef,data,shares,prices) {
+  alpha <- coef[grepl('alpha',names(coef))]
+  n <- length(alpha)
+  beta <- coef[grepl('beta',names(coef))]
+  gamma <- matrix(coef[grepl('gamma',names(coef))], nrow = n)
+  
+  ones <- rep(1,n)
+  
+  expenditure <- ones + beta/shares
+  
+  marshall <- -diag(1,n,n) + gamma/(shares %*% t(ones)) - beta %*% t(ones) * (ones %*% t(alpha) + ones %*% t(gamma %*% log(prices))) / (shares %*% t(ones))
+  
+  hicks <- marshall + (expenditure %*% t(ones)) * (ones %*% t(shares))
+  
+  names(expenditure) <- paste0("q_",c(1:n))
+  rownames(hicks) <- paste0("q_",c(1:n))
+  colnames(hicks) <- paste0("p_",c(1:n))
+  rownames(marshall) <- paste0("q_",c(1:n))
+  colnames(marshall) <- paste0("p_",c(1:n))
+  
+  ## Dimensions of the output
+  out <- list()
+  out$expenditure <- expenditure
+  out$hicks <- hicks
+  out$marshall <- marshall
+  
+  ## Print
+  cat("Expenditure Elasticities \n")
+  print(out$expenditure)
+  cat("\n Marshallian Price Elasticities \n")
+  print(out$marshall)
+  cat("\n Hicksian (compensated) Price Elasticities \n")
+  print(out$hicks)
+}
+
+## Excute the functions
+aids_elas(coef = aids_est(maxIter = 10, tol = 1e-5, b_start = la_coef(la_est, n=4, data = la_data)$coef, data = aids_data, n=4)$b,
+          data = aids_data,
+          shares = unique(data_long %>% ungroup %>% select(c('Food','w_j')))$w_j,
+          prices = unique(data_long %>% ungroup %>% select(c('Food','p_j')))$p_j)
+```
+
+# References {-}
+
+- Deaton, A., & Muellbauer, J. (1980a). An almost ideal demand system. The American economic review, 70(3), 312-326.
+
+- Deaton, A., & Muellbauer, J. (1980b). Economics and consumer behavior. Cambridge university press.
+
+- Anderson, G., & Blundell, R. (1983). Testing restrictions in a flexible dynamic demand system: an application to consumers' expenditure in Canada. The Review of Economic Studies, 50(3), 397-410.
+
+- Blanciforti, L. A., Green, R. D., & King, G. A. (1986). US consumer behavior over the postwar period: an almost ideal demand system analysis. Monographs.
+
+- Moschini, G. (1995). Units of measurement and the Stone index in demand system estimation. American journal of agricultural economics, 77(1), 63-68.
+
+- Banks, J., Blundell, R., & Lewbel, A. (1997). Quadratic Engel curves and consumer demand. Review of Economics and statistics, 79(4), 527-539.
+
+- Henningsen, A. (2017). Demand analysis with the “almost ideal demand system” in r: Package miceconaids. Copenhagen: Department of Food and Resource Economics, University of Copenhagen, 1-36.
+
+- Greene, W. H. (2018). Econometric analysis (eighth edition). Pearson.
+
+- [Aguirregabiria, V. (2021). Empirical industrial organization: models, methods, and applications. University of Toronto.](https://q.utoronto.ca/courses/286576/files/21956484?module_item_id=3989565l)
+
+- [The Piglog Model](https://www.ers.usda.gov/webdocs/publications/47216/36225_tb1872c.pdf?v=42487)
