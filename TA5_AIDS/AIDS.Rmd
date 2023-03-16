@@ -1,25 +1,24 @@
 ---
-title: "TA session"
-subtitle: "Demand Analysis with the AIDS Model"
+title: "TA session: Demand Analysis with the AIDS Model"
+subtitle: "Applied IO with Susanna Esteban, IDEA, Spring 2023"
 author:
-- "Applied IO with Susanna Esteban (IDEA, Spring 2023)"
-- "TA: Conghan Zheng"
+- 'TA: Conghan Zheng'
 date: 'Last updated: `r Sys.Date()`'
 output:
-  bookdown::pdf_document2:
-    toc: no
-    number_sections: yes
-  html_notebook:
-    toc: yes
-    toc_float: yes
-    number_sections: yes
-    code_folding: hide
   bookdown::html_document2:
     toc: yes
     toc_float: yes
     number_sections: yes
     code_folding: hide
     code_download: yes
+  html_notebook:
+    toc: yes
+    toc_float: yes
+    number_sections: yes
+    code_folding: hide
+  bookdown::pdf_document2:
+    toc: no
+    number_sections: yes
 urlcolor: blue
 theme: paper
 ---
