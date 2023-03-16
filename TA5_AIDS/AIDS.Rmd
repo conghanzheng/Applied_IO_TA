@@ -5,12 +5,6 @@ author:
 - 'TA: Conghan Zheng'
 date: 'Last updated: `r Sys.Date()`'
 output:
-  bookdown::html_document2:
-    toc: yes
-    toc_float: yes
-    number_sections: yes
-    code_folding: hide
-    code_download: yes
   html_notebook:
     toc: yes
     toc_float: yes
@@ -19,9 +13,17 @@ output:
   bookdown::pdf_document2:
     toc: no
     number_sections: yes
+  bookdown::html_document2:
+    toc: yes
+    toc_float: yes
+    number_sections: yes
+    code_folding: hide
+    code_download: yes
 urlcolor: blue
 theme: paper
 ---
+
+[Link to compiled html](https://conghanzheng.github.io/Applied_IO_TA/AIDS.html)
 
 ```{r chunk_setup, include = FALSE, purl = FALSE}
 ## Chunk options
