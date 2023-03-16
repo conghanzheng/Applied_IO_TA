@@ -1,33 +1,51 @@
 ---
 title: "TA session"
-subtitle: "Demand Analysis with the Almost Ideal Demand System (AIDS) Model"
+subtitle: "Demand Analysis with the AIDS Model"
 author:
 - "Applied IO with Susanna Esteban (IDEA, Spring 2023)"
 - "TA: Conghan Zheng"
 date: 'Last updated: `r Sys.Date()`'
 output:
-  bookdown::html_document2:
-    toc: yes
-    toc_float: yes
+  bookdown::pdf_document2:
+    toc: no
     number_sections: yes
-    code_folding: hide
-    code_download: no
   html_notebook:
     toc: yes
     toc_float: yes
     number_sections: yes
     code_folding: hide
-  bookdown::pdf_document2:
-    toc: no
+  bookdown::html_document2:
+    toc: yes
+    toc_float: yes
     number_sections: yes
+    code_folding: hide
+    code_download: yes
 urlcolor: blue
 theme: paper
 ---
 
-*Latest version of this file:* 
+```{r chunk_setup, include = FALSE, purl = FALSE}
+## Chunk options
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 
-- [`pdf`](https://github.com/conghanzheng/Applied_IO_TA/blob/ccb87c854b9e67ec79e4ecd47840d879c325ef27/docs/index.pdf); 
-- [`html`](https://conghanzheng.github.io/Applied_IO_TA/) (contains R code chunks).
+## Generate an R script of all code when knit (exclude a chunk from the script with option `purl = FALSE`)
+knitr::knit_hooks$set(purl = knitr::hook_purl)
+```
+
+```{r r_setup, echo = knitr::is_html_output()}
+
+## Preliminaries ----
+rm(list = ls()) ## Clear the environment
+
+## Install and load packages
+packages <- c('rstudioapi','R.utils','dplyr','tidyr','data.table','knitr','kableExtra','Hmisc','systemfit','miscTools') ## Manually list package dependencies
+if (!require('pacman')) install.packages('pacman')
+library(pacman)
+pacman::p_load(packages, character.only = TRUE) ## Check if all packages declared in the previous vector are installed, install if not, and load them
+
+## (Local) Path to the current script
+scriptpath <- dirname(rstudioapi::getSourceEditorContext()$path) %>% setwd()
+```
 
 # Overview
 
@@ -164,7 +182,7 @@ This iterated SUR estimator generally converges to the FIML estimates (Blancifor
 
 # Estimation
 
-## Resources^[Stata is certainly not a good tool for structural models, Matlab is not always very fast. For me, R and Python are somewhat similar and they each have their own occasions. Python (`NumPy`) is more general in many cases, e.g., it understands either row-major (C style) or [column-major ordered](https://en.wikipedia.org/wiki/Row-_and_column-major_order) arrays (Fortran style), while R only understands the column-major. Python has the official [pystata](https://www.stata.com/new-in-stata/pystata/) for Stata integration, while R only has several user-written packages and none of them work well (I remember Wagner wasting a lot of time on these packages in his PS last semester). Katherina told me she found the online resources for structural models mainly in Python (especially of more macro) or Matlab. When it comes to the performance, Python has the clever [`@jit`](https://numba.readthedocs.io/en/stable/user/jit.html) from `Numba` that can speed up the code (Tino recommended it to me). But you can go one step further: integrate R with C++ ([`Rcpp`](https://github.com/RcppCore/Rcpp)) to improve the performance (Hanna recommended it to me). And more, R also has `shiny` which I guess no labor economist can refuse.]
+## Resources
 
 - R (more online resources for now): 
   - Package [micEconAids](https://rdrr.io/cran/micEconAids/) (user-written package, still maintained; for Seemingly Unrelated Regression (SUR), it calls the [systemfit](https://cran.r-project.org/web/packages/systemfit/index.html) package).
@@ -187,25 +205,6 @@ standard AIDS model of Deaton & Muellbauer (1980a), or its quadratic variant of 
 For TA materials I choose R notebook^[ 
 R notebook is just like Jupyter notebook, it allows for independent and interactive execution of the code chunks, and markup languages like markdown and LaTeX. R notebook's (it's available only in Rstudio, you can't use it in other IDE) advantage over Jupyter notebook is that it allows [inline code](https://rmarkdown.rstudio.com/lesson-4.html). In Jupyter notebook, you need to have the `python-markdown` extension for inline code, which is a non-standard syntax, it doesn't work in JupyterLab for example, so you need to be prepared to take that risk. But for collaboration, the Jupyter project is clearly doing better.] for illustration purpose.
 
-```{r chunk_setup, include = FALSE}
-## Chunk options
-knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
-```
-
-```{r r_setup, echo = knitr::is_html_output()}
-## ---- Preliminaries ----
-rm(list = ls()) ## Clear the environment
-
-## Install and load packages ----
-packages <- c('rstudioapi','R.utils','dplyr','tidyr','data.table','knitr','kableExtra','Hmisc','systemfit','miscTools') ## Manually list package dependencies
-if (!require('pacman')) install.packages('pacman')
-library(pacman)
-pacman::p_load(packages, character.only = TRUE) ## Check if all packages declared in the previous vector are installed, install if not, and load them
-
-## (Local) Path to the current script
-scriptpath <- dirname(rstudioapi::getSourceEditorContext()$path) %>% setwd()
-```
-
 ## Data
 
 Our data set is [U.S. food demand data](https://github.com/cran/micEconAids/raw/master/data/Blanciforti86.txt.gz) (Blanciforti et al., 1986) which distinguishes four categories ($j \in \{1,2,3,4\}$) of food(: 
@@ -218,7 +217,8 @@ Our data set is [U.S. food demand data](https://github.com/cran/micEconAids/raw/
 These data are available for the years 1947 to 1978.
 
 ```{r data_clean, echo = knitr::is_html_output(), results = 'markup'}
-## Online data: Blanciforti et al. (1986)
+
+## Online data: Blanciforti et al. (1986) ----
 data_wide <- data.table::fread("https://github.com/cran/micEconAids/raw/master/data/Blanciforti86.txt.gz") %>% 
   drop_na() %>%
   rename(Year = V1)
@@ -226,7 +226,7 @@ data_wide <- data.table::fread("https://github.com/cran/micEconAids/raw/master/d
 ## Number of goods
 n <- 4
 
-## Data cleansing
+## Data cleansing ----
 ## Eventually, we need wide data, but it would be handy if we first reshape it longer
 data_long <- tidyr::pivot_longer(data_wide %>% select(c('Year',"xFood",
                                                         'wFood1','wFood2','wFood3','wFood4',
@@ -249,14 +249,14 @@ data_long <- tidyr::pivot_longer(data_wide %>% select(c('Year',"xFood",
          lnx_lnP_stone_t_1 = log(x_t) - lnP_stone_t_1)
 
 print(head(data_long[,1:7]))
-  
 ```
-## Estimation
+## Results
 
 ### LA-AIDS
 
 ```{r la_functions, echo = knitr::is_html_output()}
-## LA-AIDS Data
+
+## LA-AIDS Data ----
 la_data <- pivot_wider(data_long %>% select(c('Year','Food','x_t','w_jt','lnp_jt','lnx_lnP_stone_t','lnx_lnP_stone_t_1')),
                        names_from = Food,
                        names_glue = "{.value}_{Food}",
@@ -265,8 +265,9 @@ la_data <- pivot_wider(data_long %>% select(c('Year','Food','x_t','w_jt','lnp_jt
 
 colnames(la_data) <- gsub("(^\\w+\\_)(j)(t)(\\_)(\\d{1})","\\1\\5\\3",colnames(la_data))
 
-## Function: return the restrictions on paramters (our equation system is a constrained system)
-## Symmetry is assumed (notice that symmetry implies homogeneity)
+##' Function: return the restrictions on parameters ---- 
+##' (our equation system is a constrained system)
+##' Symmetry is assumed (notice that symmetry implies homogeneity)
 restriction <- function(n) {
   nExoEqn <- n + 2 # number of exogenous variables per equation
   nExo <- (n-1)*nExoEqn # number of exogenous variables 
@@ -316,7 +317,8 @@ restriction <- function(n) {
   return(restriction)
 }
 
-## Function: LA-AIDS estimation, returning the coefficients
+##' Function: LA-AIDS estimation ----
+##' returning the coefficients
 la_coef <- function(est, n, data, stone_lag = FALSE) {
   data <- as.data.frame(data)
   
@@ -418,7 +420,7 @@ la_coef <- function(est, n, data, stone_lag = FALSE) {
   return(out)
 }
 
-## Function: to print the LA-AIDS estimation results
+## Function: print the LA-AIDS estimation results ----
 la_print <- function(coef) {
   cat( "Demand analysis with the Almost Ideal Demand System (AIDS)\n" )
   cat( "Estimation Method: LA" )
@@ -431,7 +433,7 @@ la_print <- function(coef) {
 
 The LA-AIDS model estimates the following equation system:
 ```{r la_system, echo = knitr::is_html_output(), restuls = 'markup'}
-## Function: LA equation system
+## Function: LA equation system ----
 la_sur_system <- function(n,stone_lag=FALSE){
   system <- list()
     for(i in 2:n ) {
@@ -468,7 +470,7 @@ la_print(la_coef(la_est, n=4, data = la_data))
 
 Using the strategy discussed in section \@ref(aidssteps), system \eqref{eq:aidsec} can be estimated using linear estimation techniques:
 ```{r aids_system, echo = knitr::is_html_output(), restuls = 'markup'}
-## Function: AIDS equation system
+## Function: AIDS equation system ----
 aids_sur_system <- function(n){
   system <- list()
     for(i in 2:n ) {
@@ -487,7 +489,7 @@ print(aids_sur_system(n=4) %>% as.matrix())
 The initial value $\ln P^0$ (a $T \times 1$ vector) is obtained from the LA-AIDS estimation. Convergence is reached fast:
 
 ```{r aids_funtions, echo = knitr::is_html_output(), results = 'markup'}
-## AIDS data
+## AIDS data ----
 aids_data <- pivot_wider(data_long %>% 
                            select(c('Year','Food','x_t','lnx_t','w_jt','lnp_jt')),
                        names_from = Food,
@@ -497,7 +499,8 @@ aids_data <- pivot_wider(data_long %>%
 
 colnames(aids_data) <- gsub("(^\\w+\\_)(j)(t)(\\_)(\\d{1})","\\1\\5\\3",colnames(aids_data))
 
-## Function: to calculate the translog prices lnP (which depend on parameters)
+##' Function: to calculate the translog prices lnP ---- 
+##' (which depend on parameters)
 translog <- function(coef, data) {
   nObs <- nrow(data)
   alpha0 <- 1
@@ -526,7 +529,7 @@ aids_data$lnP_t <- as.numeric(translog(coef = la_coef(la_est, n=4, data = la_dat
 aids_data <- aids_data %>%
   mutate(lnx_lnP_t = lnx_t - lnP_t)
 
-## Function: AIDS estimation
+## Function: AIDS estimation ----
 aids_est <- function(maxIter, tol = 1e-5, b_start = la_coef(la_est, n=4, data = la_data)$coef, data = aids_data, n) {
 
 ## starting values
@@ -623,7 +626,7 @@ I won't give the elasticities expressions here. For the expenditure elasticities
 
 The demand elasticities are calculated at sample means:
 ```{r aids_elas, echo = knitr::is_html_output(), restuls = 'markup'}
-## Function: to calcualte expenditure and price elasticities of demand (Marshallian and Hicksian)
+## Function: to calcualte expenditure and price elasticities of demand (Marshallian and Hicksian) ----
 aids_elas <- function(coef,data,shares,prices) {
   alpha <- coef[grepl('alpha',names(coef))]
   n <- length(alpha)
