@@ -1,6 +1,6 @@
 # TA Materials for Applied IO, Spring 2023
 
-| Session # 	| Date 	| Topic 	| Content 	| File 	| Material Description 	|
+| Session # 	| Date 	| Topic 	| Content 	| File 	| File Description 	|
 |:---:|---	|---	|---	|:---:|---	|
 |1| 2023-01-20 	| Quantity Competition 	| Exercises on the Cournot model. 	| [TA1.pdf](https://github.com/conghanzheng/Applied_IO_TA/blob/856c5760fee73c84fd3ba397450aa8fbbd72b3b9/TA1_Quantity_Competition/TA1.pdf) 	| Slides 	|
 |2| 2023-02-03 	| Price Competition 	| A review of the envelope theorem. Exercises on the Bertrand model. 	| (1) [TA2.pdf](https://github.com/conghanzheng/Applied_IO_TA/blob/856c5760fee73c84fd3ba397450aa8fbbd72b3b9/TA2_Price_Competition/TA2.pdf) <br>(2) [TA2.m](https://github.com/conghanzheng/Applied_IO_TA/blob/856c5760fee73c84fd3ba397450aa8fbbd72b3b9/TA2_Price_Competition/TA2.m)	| (1) Slides. *Update*: compared to the version we used in class, new pages 21 and 22 have been added. <br>(2) Symbolic math solver for maximization problems in TA2.pdf	|
