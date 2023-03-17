@@ -14717,7 +14717,7 @@ The optimization of the whole problem is only over $\theta$.</p>
 \begin{align*}
     \quad &amp; \hat{\delta}_{jm} (\theta) = \mathop{\mathrm{argmin}}\limits_{\delta_{jm}} \enspace \lVert \delta_{jm}^{t} - \delta_{jm}^{t+1} \rVert
 \end{align*}</p>
-<p>The outer loop solves the choice model by GMM. For the given $\theta$, we solve
+<p>In each iteration of the outer loop, \eqref{eq:delta} is solved by GMM. For the given $\theta$, we solve
 \begin{align}
     \left(\hat{\alpha}(\theta), \hat{\beta}(\theta)
     \right)
@@ -14725,16 +14725,16 @@ The optimization of the whole problem is only over $\theta$.</p>
     \label{eq:gmm} \tag{10}
 \end{align}
 and we loop over all possible $\theta$s to minimize the GMM objective function.</p>
-<p>The observation-specific moments $g_{ijm}$ in \eqref{eq:gmm} are
+<p>The observation-specific moments $g_{jm}$ in \eqref{eq:gmm} are
 \begin{align}
-    g_{ijm}
+    g_{jm}
     =
     \xi_{jm} \cdot z_{jm}
     \overset{\eqref{eq:delta}}{=}
     \big[\delta_{jm}(\theta) - x_{jm} \beta + \alpha p_{jm}\big] \cdot z_{jm}
     \label{eq:mmt} \tag{11}
 \end{align}
-where $d_{ijm}$ is a binary indicator that equals 1 if the product $j$ is chosen by consumer $i$ in market $m$. The optimal weighting matrix $W$ is the asymptotic covariance of $g$: $W = g g'$ (recall from TA1 of Microeconometrics in the last semester with me).</p>
+The optimal weighting matrix $W$ is the asymptotic covariance of $g$: $W = g g'$ (recall from TA1 of Microeconometrics in the last semester with me).</p>
 <h2 id="Estimation">Estimation<a class="anchor-link" href="#Estimation">&#182;</a></h2><h3 id="Resources">Resources<a class="anchor-link" href="#Resources">&#182;</a></h3><ul>
 <li><p>Python: (best one to choose for now)</p>
 <ul>
@@ -15112,7 +15112,7 @@ where $d_{ijm}$ is a binary indicator that equals 1 if the product $j$ is chosen
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>Elapsed time: 4m 2s
+<pre>Elapsed time: 4m 4s
 </pre>
 </div>
 </div>
