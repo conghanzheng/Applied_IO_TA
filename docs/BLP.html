@@ -14628,6 +14628,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <p><code>TA:</code> Conghan Zheng</p>
 <p><code>Last updated:</code>16 MAR 2023</p>
 <p><code>Compiled with</code>: Python 3.9.6</p>
+<p><a href="https://conghanzheng.github.io/Applied_IO_TA/BLP.html"><code>Link to compiled html</code></a></p>
 <hr />
 <p>In this example, we perform structural demand estimation using the algorithm described in Berry, Levinsohn &amp; Pakes (1995).</p>
 <h2 id="Model">Model<a class="anchor-link" href="#Model">&#182;</a></h2><p>Suppose there are M markets indexed by $m = 1,\dots, M$, and let $J_m$ be the number of options available to each consumer in market $m$. Following the exposition by Nevo (2000), the (indirect) choice-specific utility that consumer $i$ in market $m$ obtains from product $j$ (with $j=0$ representing the &quot;no-purchase&quot; option, that is, the outside good) is given by:</p>
@@ -15111,9 +15112,18 @@ where $d_{ijm}$ is a binary indicator that equals 1 if the product $j$ is chosen
     <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 
 
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>Elapsed time: 5m 5s
-</pre>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">ModuleNotFoundError</span>                       Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In[1], line 9</span>
+<span class="ansi-green-intense-fg ansi-bold">      7</span> #!pip install pyblp
+<span class="ansi-green-intense-fg ansi-bold">      8</span> import pyblp
+<span class="ansi-green-fg">----&gt; 9</span> from numba import jit, njit, prange
+<span class="ansi-green-intense-fg ansi-bold">     11</span> import time
+<span class="ansi-green-intense-fg ansi-bold">     12</span> time_start = time.time()
+
+<span class="ansi-red-fg">ModuleNotFoundError</span>: No module named &#39;numba&#39;</pre>
 </div>
 </div>
 

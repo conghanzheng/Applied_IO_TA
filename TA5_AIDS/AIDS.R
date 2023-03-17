@@ -1,4 +1,4 @@
-## ----r_setup, echo = knitr::is_html_output()---------------------------------------------
+## ----r_setup, echo = knitr::is_html_output()----------------------------------
 
 ## Preliminaries ----
 rm(list = ls()) ## Clear the environment
@@ -12,7 +12,7 @@ pacman::p_load(packages, character.only = TRUE) ## Check if all packages declare
 ## (Local) Path to the current script
 scriptpath <- dirname(rstudioapi::getSourceEditorContext()$path) %>% setwd()
 
-## ----data_clean, echo = knitr::is_html_output(), results = 'markup'----------------------
+## ----data_clean, echo = knitr::is_html_output(), results = 'markup'-----------
 
 ## Online data: Blanciforti et al. (1986) ----
 data_wide <- data.table::fread("https://github.com/cran/micEconAids/raw/master/data/Blanciforti86.txt.gz") %>% 
@@ -46,7 +46,7 @@ data_long <- tidyr::pivot_longer(data_wide %>% select(c('Year',"xFood",
 
 print(head(data_long[,1:7]))
 
-## ----la_functions, echo = knitr::is_html_output()----------------------------------------
+## ----la_functions, echo = knitr::is_html_output()-----------------------------
 
 ## LA-AIDS Data ----
 la_data <- pivot_wider(data_long %>% select(c('Year','Food','x_t','w_jt','lnp_jt','lnx_lnP_stone_t','lnx_lnP_stone_t_1')),
@@ -222,7 +222,7 @@ la_print <- function(coef) {
   print(coef$r2)
 }
 
-## ----la_system, echo = knitr::is_html_output(), restuls = 'markup'-----------------------
+## ----la_system, echo = knitr::is_html_output(), restuls = 'markup'------------
 ## Function: LA equation system ----
 la_sur_system <- function(n,stone_lag=FALSE){
   system <- list()
@@ -243,7 +243,7 @@ la_sur_system <- function(n,stone_lag=FALSE){
 ## Print
 print(la_sur_system(n=4, stone_lag = FALSE) %>% as.matrix())
 
-## ----la_fit, echo = knitr::is_html_output(), results = 'markup'--------------------------
+## ----la_fit, echo = knitr::is_html_output(), results = 'markup'---------------
 ## Execute the functions
 la_est <- systemfit::systemfit(la_sur_system(n=4, stone_lag = FALSE), 
                                method = "SUR",
@@ -253,7 +253,7 @@ la_est <- systemfit::systemfit(la_sur_system(n=4, stone_lag = FALSE),
 ## Print results
 la_print(la_coef(la_est, n=4, data = la_data))
 
-## ----aids_system, echo = knitr::is_html_output(), restuls = 'markup'---------------------
+## ----aids_system, echo = knitr::is_html_output(), restuls = 'markup'----------
 ## Function: AIDS equation system ----
 aids_sur_system <- function(n){
   system <- list()
@@ -270,7 +270,7 @@ aids_sur_system <- function(n){
 ## Print the system
 print(aids_sur_system(n=4) %>% as.matrix())
 
-## ----aids_funtions, echo = knitr::is_html_output(), results = 'markup'-------------------
+## ----aids_funtions, echo = knitr::is_html_output(), results = 'markup'--------
 ## AIDS data ----
 aids_data <- pivot_wider(data_long %>% 
                            select(c('Year','Food','x_t','lnx_t','w_jt','lnp_jt')),
@@ -399,7 +399,7 @@ knitr::kable(out,
   add_header_above(c(" " = 2, "AIDS" = 3))
   
 
-## ----aids_elas, echo = knitr::is_html_output(), restuls = 'markup'-----------------------
+## ----aids_elas, echo = knitr::is_html_output(), restuls = 'markup'------------
 ## Function: to calcualte expenditure and price elasticities of demand (Marshallian and Hicksian) ----
 aids_elas <- function(coef,data,shares,prices) {
   alpha <- coef[grepl('alpha',names(coef))]
