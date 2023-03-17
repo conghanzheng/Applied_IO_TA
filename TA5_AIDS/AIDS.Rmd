@@ -23,8 +23,6 @@ urlcolor: blue
 theme: paper
 ---
 
-[Link to compiled html](https://conghanzheng.github.io/Applied_IO_TA/AIDS.html)
-
 ```{r chunk_setup, include = FALSE, purl = FALSE}
 ## Chunk options
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
