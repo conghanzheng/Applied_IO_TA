@@ -5,12 +5,9 @@ author:
 - 'TA: Conghan Zheng'
 date: 'Last updated: `r Sys.Date()`'
 output:
-  bookdown::pdf_document2:
-    toc: no
-    number_sections: yes
   bookdown::html_document2:
-    toc: yes
-    toc_float: yes
+    toc: no
+    toc_float: no
     number_sections: yes
     code_folding: hide
     code_download: yes
@@ -19,9 +16,28 @@ output:
     toc_float: yes
     number_sections: yes
     code_folding: hide
+  bookdown::pdf_document2:
+    toc: no
+    number_sections: yes
 urlcolor: blue
 theme: paper
 ---
+
+<!-- <style type="text/css"> -->
+<!-- .main-container { -->
+<!--   max-width: 1800px; -->
+<!--   margin-left: auto; -->
+<!--   margin-right: auto; -->
+<!-- } -->
+<!-- /* Whole document: */ -->
+<!-- body{ -->
+<!--   font-size: 16pt; -->
+<!-- } -->
+<!-- /* Headers */ -->
+<!-- h1,h2,h3,h4,h5,h6{ -->
+<!--   font-size: 24pt; -->
+<!-- } -->
+<!-- </style> -->
 
 ```{r chunk_setup, include = FALSE, purl = FALSE}
 ## Chunk options
@@ -84,7 +100,7 @@ Following Deaton and Muellbauer (1980a), we take the *Piglog* (Price Invariant G
 \begin{align}\label{eq:lnexp}
   \ln e(p,u) = a(p) + b(p) \cdot u \tag{4}
 \end{align}
-Deaton and Muellbauer (1980a) set the functional forms of $a(p)$ and $b(p)$ to ensure that $e(\cdot,\cdot)$ is flexible enough and has enough parameters for its derivatives $\frac{\partial e}{\partial p_j}$, $\frac{\partial e}{\partial u}$, $\frac{\partial e}{\partial p_j \partial p_k}$, $\frac{\partial e}{\partial \partial p_j \partial u}$, $\frac{\partial e}{\partial u^2}$:
+Deaton and Muellbauer (1980a) set the functional forms of $a(p)$ and $b(p)$ to ensure that $e(\cdot,\cdot)$ is flexible enough and has enough parameters for its derivatives $\frac{\partial e}{\partial p_j}$, $\frac{\partial e}{\partial u}$, $\frac{\partial e}{\partial p_j \partial p_k}$, $\frac{\partial e}{\partial p_j \partial u}$, $\frac{\partial e}{\partial u^2}$:
 \begin{align*}
   a(p) &= \sum_{j=1}^n \alpha_j \ln p_j + \frac{1}{2} \sum_{j=1}^n \sum_{k=1}^n \gamma_{jk}^* \ln p_j \ln p_k \\
   b(p) &= \prod_{j=1}^n p_j^{\beta_j}
@@ -147,7 +163,7 @@ Given data on prices $\{p_{jt}\}_{j,t}$ and quantities $\{q_{jt}\}_{j,t}$, our g
 
 Given data on prices $\{p_{jt}\}_{j,t}$ and quantities $\{q_{jt}\}_{j,t}$:
 
-- Calculate the total expenditures $y_{jt} = \sum_{j} p_{jt} q_{jt}$ and the expenditure shares $w_{jt} = \frac{p_{jt} q_{jt}}{X_t}$ from prices and quantities data.
+- Calculate the total expenditures $X_{t} = \sum_{j} p_{jt} q_{jt}$ and the expenditure shares $w_{jt} = \frac{p_{jt} q_{jt}}{X_t}$ from prices and quantities data.
 - Compute the Stone's price index $\ln P^*$ from shares and prices data using expression \eqref{eq:stone}.
 - Estimate model \eqref{eq:laaids}, obtain an $n\times 1$ vector for $\alpha$, an $n \times 1$ vector for $\beta$, and an $n \times n$ matrix for $\gamma$.
 
